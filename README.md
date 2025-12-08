@@ -8,6 +8,7 @@ GEE生成青藏高原的NDVI影像,在图中任意位置点击会放回此地区
 <img width="1912" height="948" alt="image" src="https://github.com/user-attachments/assets/72db15a3-e790-4919-ad5c-6357112457e7" />
 点击上图右下角可以放大图像(用于科研再合适不过了,注意此图可下载多种图片格式)
 <img width="1912" height="948" alt="image" src="https://github.com/user-attachments/assets/ff06f16f-2b69-47cc-bae6-6554a8c6c004" />
+
 ## 本代码有多图层
 
 <img width="258" height="160" alt="image" src="https://github.com/user-attachments/assets/8b49e130-bbe6-40dc-9994-98eb1ad0796e" />
