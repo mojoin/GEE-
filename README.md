@@ -9,6 +9,7 @@ GEE生成青藏高原的NDVI影像,在图中任意位置点击会放回此地区
 点击上图右下角可以放大图像(用于科研再合适不过了,注意此图可下载多种图片格式)
 <img width="1912" height="948" alt="image" src="https://github.com/user-attachments/assets/ff06f16f-2b69-47cc-bae6-6554a8c6c004" />
 ## 本代码有多图层
+
 <img width="258" height="160" alt="image" src="https://github.com/user-attachments/assets/8b49e130-bbe6-40dc-9994-98eb1ad0796e" />
 ● Selected Point：选中点的可视化（通常是红点或标记，用来显示你点击的位置）
 ● NDVI Trend Slope：NDVI长期趋势斜率（一般通过Mann-Kendall或线性回归计算得到的每个像元NDVI时间序列的变化速率，单位通常是NDVI/年）
