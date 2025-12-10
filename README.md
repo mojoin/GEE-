@@ -109,6 +109,94 @@ NDMI平均趋势图(注意:可以下载为svg等图像)
 
 ## 📂 项目结构
 ```text
+
+# 3、基于 GEE 的多源 Landsat 长时序影像融合与中值合成报告
+
+![GEE Badge](https://img.shields.io/badge/Platform-Google%20Earth%20Engine-green)
+![Data Badge](https://img.shields.io/badge/Data-Landsat%205%2F7%2F8%2F9-blue)
+![Status Badge](https://img.shields.io/badge/Status-Completed-success)
+
+## 1. 项目背景 (Background)
+
+Landsat 系列卫星提供了长达 40 年以上的地球表面观测记录。然而，在进行长时序分析时，单一传感器往往无法覆盖所有时间段（如 L5 覆盖早期，L8/9 覆盖近期）。此外，不同传感器的波段定义和辐射特性存在差异。
+
+本项目旨在基于 Google Earth Engine (GEE) 平台，构建一套自动化工作流，**无缝融合 Landsat 5, 7, 8, 9 四代卫星数据**，通过波段对齐和去云处理，生成高质量的研究区（AOI）中值合成影像（Median Composite）。
+
+## 效果图
+图像可以选择时间区间,点击生成可在gee上生成对应图像
+
+<img width="1912" height="948" alt="67b33dee-acad-4a89-9cb8-906541e87811" src="https://github.com/user-attachments/assets/e1fa9926-1528-4427-9db9-b5e80146778d" />
+
+点击创建导出任务,可以获得geotiff影像点击run可保存在Google云盘可以在Google 云盘下载
+
+<img width="525" height="352" alt="image" src="https://github.com/user-attachments/assets/61e6a0a5-e5be-46cf-a8bf-5ab9e97d3b38" />
+
+在Google云盘中找到文件保存位置
+
+<img width="1912" height="948" alt="image" src="https://github.com/user-attachments/assets/9ce8219d-0899-4b6c-a8ab-fe2b693077eb" />
+
+geotiff图像可以直接在qgis(或者airgis上加载,生成有图例,有标题的学术图片)
+
+<img width="1920" height="1032" alt="8a5e5750-7380-438b-8b59-74be5f143c12" src="https://github.com/user-attachments/assets/d1afa74b-fa5f-43ad-8a65-2188e07af129" />
+
+
+## 2. 数据源 (Data Sources)
+
+本项目使用了 USGS Landsat Collection 2 Level-2 (表面反射率) 数据集：
+
+| 卫星传感器 | 数据集 ID (GEE) | 时间覆盖 | 备注 |
+| :--- | :--- | :--- | :--- |
+| **Landsat 9** | `LANDSAT/LC09/C02/T1_L2` | 2021-至今 | 最新数据 |
+| **Landsat 8** | `LANDSAT/LC08/C02/T1_L2` | 2013-至今 | 目前主力 |
+| **Landsat 7** | `LANDSAT/LE07/C02/T1_L2` | 1999-至今 | 含 SLC-off 条带 |
+| **Landsat 5** | `LANDSAT/LT05/C02/T1_L2` | 1984-2012 | 历史数据 |
+
+* **研究区域 (AOI)**: `projects/maxhecheng/assets/haidian` (北京市海淀区矢量边界)
+
+## 3. 技术路线与算法 (Methodology)
+
+### 3.1 核心难点解决方案
+为了实现多源融合，必须解决以下一致性问题：
+
+1.  **波段号不一致 (Band Misalignment)**:
+    * L8/L9 的近红外波段是 **B5**，而 L5/L7 是 **B4**。
+    * **解决方案**: 建立波段映射关系，将所有影像的波段统一重命名为标准名称：`['Blue', 'Green', 'Red', 'NIR', 'SWIR1', 'SWIR2']`。
+
+2.  **定量化差异 (Scale Factors)**:
+    * Collection 2 数据以整数形式存储。
+    * **解决方案**: 应用线性缩放公式还原物理值：
+        $$SR = Pixel \times 0.0000275 - 0.2$$
+
+3.  **去云掩膜 (Cloud Masking)**:
+    * 利用 `QA_PIXEL` 波段的位操作 (Bitwise Operation) 识别云和云影。
+
+### 3.2 处理流程图
+
+```mermaid
+graph TD
+    A[开始: 输入时间范围 & AOI] --> B{选择可用数据源}
+    B -->|1984-2012| C[Landsat 5 Collection]
+    B -->|1999-2022| D[Landsat 7 Collection]
+    B -->|2013-至今| E[Landsat 8 Collection]
+    B -->|2021-至今| F[Landsat 9 Collection]
+    
+    C & D --> G[预处理 L5/7]
+    E & F --> H[预处理 L8/9]
+    
+    subgraph 预处理逻辑
+    G --> G1[去云 QA Mask]
+    G --> G2[应用缩放因子]
+    G --> G3[波段重命名 (B1->Blue...)]
+    
+    H --> H1[去云 QA Mask]
+    H --> H2[应用缩放因子]
+    H --> H3[波段重命名 (B2->Blue...)]
+    end
+    
+    G3 & H3 --> I[数据集合并 (Merge Collection)]
+    I --> J[中值合成 (Median Reducer)]
+    J --> K[裁剪至 AOI]
+    K --> L[输出结果: 可视化 & 导出 GeoTIFF]
 .
 ├── code.js            # GEE 核心脚本代码
 ├── assets/            # (说明) 存放矢量边界数据
