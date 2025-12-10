@@ -21,7 +21,7 @@ GEE生成青藏高原的NDVI影像,在图中任意位置点击会放回此地区
 ● NDVI Mean (Avg)：多年平均NDVI（多时相NDVI的均值图，反映研究区总体植被覆盖水平,上有颜色的图就是为此图层）
 ● Boundary Outline：研究区/感兴趣区域的边界轮廓（通常是shapefile或FeatureCollection导入后显示的白色或黑色边框）
 
-# 基于 GEE 的 Sentinel-2 NDMI 交互式时序分析工具
+# 2、基于 GEE 的 Sentinel-2 NDMI 交互式时序分析工具
 # (Interactive NDMI Analysis Tool based on Google Earth Engine)
 
 ![GEE Badge](https://img.shields.io/badge/Platform-Google%20Earth%20Engine-green)
