@@ -22,13 +22,13 @@ GEE生成青藏高原的NDVI影像,在图中任意位置点击会放回此地区
 ● Boundary Outline：研究区/感兴趣区域的边界轮廓（通常是shapefile或FeatureCollection导入后显示的白色或黑色边框）
 
 # 2、基于 GEE 的 Sentinel-2 NDMI 交互式时序分析工具
-# (Interactive NDMI Analysis Tool based on Google Earth Engine)
+## (Interactive NDMI Analysis Tool based on Google Earth Engine)
 
 ![GEE Badge](https://img.shields.io/badge/Platform-Google%20Earth%20Engine-green)
 ![Data Badge](https://img.shields.io/badge/Data-Sentinel--2%20MSI-blue)
 ![Status Badge](https://img.shields.io/badge/Status-Active-success)
 
-# 基于 GEE 的 Sentinel-2 NDMI 交互式时序分析工具
+## 基于 GEE 的 Sentinel-2 NDMI 交互式时序分析工具
 
 ## 📖 项目简介 (Introduction)
 
