@@ -203,3 +203,104 @@ graph TD
 │   └── haidian        # 默认分析区域 Asset
 └── README.md          # 项目说明文档
 ```
+# 🌡️ Landsat 8 地表温度(LST) 分地物时空分析工具
+>  (Spatiotemporal Analysis of LST by Land Cover Types based on GEE)
+
+![GEE Badge](https://img.shields.io/badge/Platform-Google%20Earth%20Engine-green)
+![Data Badge](https://img.shields.io/badge/Data-Landsat%208%20%26%20ESA%20WorldCover-blue)
+![Status Badge](https://img.shields.io/badge/Status-Active-success)
+
+## 📖 项目简介 (Introduction)
+
+本项目是一个基于 **Google Earth Engine (GEE)** 的在线分析工具，旨在研究不同地表覆盖类型（Land Cover Types）对地表温度（LST）的影响。
+
+传统的地表温度分析通常只关注整个区域的均值，忽略了地物差异。本工具利用 **ESA WorldCover 10m** 高分辨率土地覆盖产品，自动提取研究区内的**森林、建筑、农田、水体、草地**五类典型地物，并基于 **Landsat 8** 热红外波段计算各年份、各月份的温度变化趋势。
+
+## ✨ 核心功能 (Key Features)
+
+* **无需人工训练分类**：直接集成 ESA WorldCover 数据，自动生成高精度地物掩膜 (Mask)。
+* **五类地物对比**：
+    * 🌲 **森林 (Trees)**
+    * 🏙️ **建筑 (Built-up)**
+    * 🌾 **农田 (Cropland)**
+    * 💧 **水体 (Water)**
+    * 🌿 **草地 (Grassland)**
+* **LST 反演与统计**：自动进行去云处理、热红外辐射定标，并转换为摄氏度 (°C)。
+* **多维数据可视化**：
+    * **时序图表**：生成五条折线，直观展示不同地物随季节的温度差异（热岛效应分析）。
+    * **空间分布**：加载特定月份的 LST 均值影像。
+![注意现在时间是3月份的北京显示非常的蓝,如果切换到7,8月就很红了](https://i-blog.csdnimg.cn/direct/e2e63559f9e1448d8d60d9b61b206264.png)
+
+* **灵活导出**：
+    * 支持导出 **GeoTIFF** 格式的月度温度分布图。(点击上图的"导出geotiff",在tasks里面就有一个图形下载(run),点击后就可以保存到Google云盘下载后进而可以导入QGIS和ArcGIS)
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/3d8bd744a7b144eca79bb700ff7f4fcb.png)
+
+    * 支持导出 **CSV/Excel** 格式的时间序列统计数据。
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5b620ce0e2a946d7afd6c16a06409dc6.png)
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0fa0d13429ab4f66b0a91d045bbbd8d5.png)
+注意这里可以切换图层且可以切换图层的透明度
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/6ce138df013d4d4180e2bb91904cc286.png)
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a7b6eed3f1fc44e5b2fbe27c5a01dd90.png)
+
+## 🧮 数据源与方法 (Data & Methodology)
+### 系统架构与流程
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b76d910b12124fae91db96ccea9846c6.png)
+### 1. 数据集 (Datasets)
+| 数据类型 | 数据源 ID (GEE) | 用途 | 分辨率 |
+| :--- | :--- | :--- | :--- |
+| **地表温度** | `LANDSAT/LC08/C02/T1_L2` | 提取 `ST_B10` 波段计算 LST | 30m (重采样) |
+| **土地覆盖** | `ESA/WorldCover/v100` | 提取地物分类标签 | 10m |
+
+### 2. 算法原理 (Algorithm)
+
+#### 2.1 地物提取
+利用 ESA WorldCover 的 `Map` 值进行重分类掩膜：
+* Value `10` → 🌲 森林
+* Value `30` → 🌿 草地
+* Value `40` → 🌾 农田
+* Value `50` → 🏙️ 建筑 (不透水面)
+* Value `80` → 💧 水体
+
+#### 2.2 温度反演公式
+将 Landsat 8 的数字量化值 (DN) 转换为摄氏度：
+
+$$LST (°C) = (DN \times 0.00341802 + 149.0) - 273.15$$
+
+#### 2.3 区域统计
+对于每一景影像 $Image_i$，计算特定地物 $Class_k$ 掩膜区域内的像素均值：
+
+$$MeanLST_{i,k} = \frac{1}{N} \sum_{p \in ROI \cap Mask_k} LST(p)$$
+
+## 🚀 快速开始 (Usage)
+
+### 环境要求
+* Google Earth Engine 账号
+* 现代浏览器 (Chrome/Edge)
+
+### 操作步骤
+1.  **打开代码链接**：(在此填入你的 GEE Link)
+2.  **设置区域**：
+    * *默认*：自动加载海淀区。
+    * *自定义*：使用地图左上角的绘图工具画一个框，工具将优先分析手绘区域。
+3.  **配置参数**：
+    * 设置 **开始日期** 和 **结束日期** (例如 `2023-01-01` 至 `2023-12-31`)。
+    * 输入 **指定月份** (例如 `2023-07`) 用于导出影像。
+4.  **运行分析**：点击绿色的 **"开始分析 (Run Analysis)"** 按钮。
+5.  **获取结果**：
+    * **查看图表**：左下角面板将显示五色折线图。
+    * **下载数据**：点击图表右上角的弹出图标下载 CSV。
+    * **下载影像**：点击右侧面板的 "导出" 按钮，在 Tasks 中下载 GeoTIFF。
+
+## 📊 典型分析结果示例
+通常情况下，图表将展示明显的**城市热岛效应**与**冷岛效应**：
+* 📈 **高温组**：建筑用地 (Built-up) 通常温度最高，夏季尤为明显。
+* 📉 **低温组**：水体 (Water) 和 森林 (Forest) 温度最低，起到降温作用。
+* 〰️ **波动组**：农田 (Cropland) 受季节与耕作影响，温度波动较大（如裸土期温度高，灌溉期温度低）。
+
+## 📂 项目结构
+```text
+.
+├── code.js            # GEE 核心脚本 (包含 UI 构建与逻辑处理)
+├── assets/            # 
+│   └── haidian        # 默认研究区矢量文件
+└── README.md          # 项目说明文档
