@@ -203,7 +203,7 @@ graph TD
 │   └── haidian        # 默认分析区域 Asset
 └── README.md          # 项目说明文档
 ```
-# 🌡️ Landsat 8 地表温度(LST) 分地物时空分析工具
+# 4、Landsat 8 地表温度(LST) 分地物时空分析工具
 >  (Spatiotemporal Analysis of LST by Land Cover Types based on GEE)
 
 ![GEE Badge](https://img.shields.io/badge/Platform-Google%20Earth%20Engine-green)
