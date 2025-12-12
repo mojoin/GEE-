@@ -300,6 +300,10 @@ $$MeanLST_{i,k} = \frac{1}{N} \sum_{p \in ROI \cap Mask_k} LST(p)$$
 # 5、Sentinel-1 SAR 地震滑坡变化检测系统：2022 泸定地震案例
 > (Sentinel-1 SAR Change Detection System: 2022 Luding Earthquake Case)
 
+![GEE Badge](https://img.shields.io/badge/Platform-Google%20Earth%20Engine-green)
+![Data Badge](https://img.shields.io/badge/Data-Sentinel--1%20SAR-blue)
+![Status Badge](https://img.shields.io/badge/Event-Luding%206.8M%20Earthquake-red)
+
 ## 📖 项目简介 (Introduction)
 
 本项目基于 **Google Earth Engine (GEE)** 平台，利用全天候、全天时的 **Sentinel-1 合成孔径雷达 (SAR)** 数据，构建了一套针对地质灾害的变化检测系统。
