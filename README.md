@@ -297,10 +297,86 @@ $$MeanLST_{i,k} = \frac{1}{N} \sum_{p \in ROI \cap Mask_k} LST(p)$$
 * 📉 **低温组**：水体 (Water) 和 森林 (Forest) 温度最低，起到降温作用。
 * 〰️ **波动组**：农田 (Cropland) 受季节与耕作影响，温度波动较大（如裸土期温度高，灌溉期温度低）。
 
-## 📂 项目结构
-```text
-.
-├── code.js            # GEE 核心脚本 (包含 UI 构建与逻辑处理)
-├── assets/            # 
-│   └── haidian        # 默认研究区矢量文件
-└── README.md          # 项目说明文档
+# 5、Sentinel-1 SAR 地震滑坡变化检测系统：2022 泸定地震案例
+> (Sentinel-1 SAR Change Detection System: 2022 Luding Earthquake Case)
+
+## 📖 项目简介 (Introduction)
+
+本项目基于 **Google Earth Engine (GEE)** 平台，利用全天候、全天时的 **Sentinel-1 合成孔径雷达 (SAR)** 数据，构建了一套针对地质灾害的变化检测系统。
+
+> 原先想做汶川地震,但是汶川2008年时并没有sentinal-1卫星
+
+当前配置专门针对 **2022年9月5日四川泸定 6.8 级地震**。由于地震发生在多云雾的高山峡谷地区，光学卫星（如 Landsat/Sentinel-2）往往受云层遮挡无法及时获取影像，而 SAR 雷达影像具有穿透云雾的能力，是第一时间监测地震诱发滑坡（Landslides）、崩塌（Collapse）及堰塞湖的理想工具。
+
+## ✨ 核心功能 (Key Features)
+
+* **卷帘对比分析 (Split Panel)**：
+    * 集成交互式卷帘工具，左侧显示**震前 (Pre-event)** 影像，右侧显示**震后 (Post-event)** 变化合成影像，支持毫秒级同步拖动对比。
+* **RGB 变化检测算法 (RGB Composite)**：
+    * 利用 RGB 假彩色合成技术，将前后时相的雷达回波强度差异转化为直观的颜色（红色/青色），快速识别受灾区域。
+* **多时相去噪合成**：
+    * 采用中值 (Median) 合成算法，有效去除 SAR 影像特有的斑点噪声 (Speckle Noise)。
+* **数据导出**：
+    * 支持导出 GeoTIFF 格式的**变化差异图 (Difference Map)**，便于后续在 ArcGIS/QGIS 中进行滑坡编目。
+
+## 📍 案例设置 (Case Study Settings)
+
+* **目标事件**：四川泸定 6.8 级地震
+* **震发时间**：2022年9月5日
+* **研究区域 (AOI)**：`projects/maxhecheng/assets/luding`
+* **时间窗口**：
+    * 📅 **震前 (Pre)**：2022-08-01 至 2022-09-04
+    * 📅 **震后 (Post)**：2022-09-06 至 2022-10-06
+
+## 🧮 算法原理 (Methodology)
+
+### 1. 数据源
+使用 `COPERNICUS/S1_GRD` 数据集 (Sentinel-1 Ground Range Detected)。
+* **极化方式**：`VH` (Vertical transmit, Horizontal receive)。VH 极化对植被结构和体积散射更敏感，能有效区分滑坡发生前后的地表粗糙度变化。
+* **轨道方向**：`DESCENDING` (降轨)。针对川西南北走向的山脉，降轨数据通常能获得较好的观测几何。
+
+### 2. RGB 变化检测合成
+为了直观展示变化，我们构建了以下假彩色合成方案：
+
+| 通道 (Channel) | 数据源 (Source) | 物理意义 |
+| :--- | :--- | :--- |
+| **R (Red)** | **震后影像 (Post-event)** | 震后回波强度 |
+| **G (Green)** | **震前影像 (Pre-event)** | 震前回波强度 |
+| **B (Blue)** | **震前影像 (Pre-event)** | 震前回波强度 |
+
+### 3. 结果解译指南 (Interpretation)
+
+通过上述合成方式，图像颜色代表了特定的地质变化：
+
+* 🔴 **红色 / 粉色 (Red/Pink)**：**后向散射增强 (Backscatter Increase)**
+    * **原因**：地震导致原本覆盖植被（较平滑/体积散射）的山体发生滑坡，暴露出**粗糙的岩石和堆积体**。粗糙表面在雷达波下会产生更强的回波。
+    * **结论**：**滑坡、崩塌、建筑物倒塌废墟**。
+    
+* 🔵 **青色 / 蓝色 (Cyan/Blue)**：**后向散射减弱 (Backscatter Decrease)**
+    * **原因**：原本是陆地或植被的区域被水淹没（水体发生镜面反射，回波极低），或者是形成了极为平滑的泥流。
+    * **结论**：**堰塞湖、水体淹没区**。
+
+* ⚪ **灰色 (Gray)**：**无变化 (No Change)**
+    * **原因**：震前震后雷达强度基本一致。
+
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5aaa6dfa100148df8e16c13cd59d0720.png)
+![请添加图片描述](https://i-blog.csdnimg.cn/direct/0666f3590c5145bf89b54bfe74b8b698.gif)
+
+## 🚀 快速使用 (Usage)
+
+1.  **加载脚本**：将代码复制到 GEE Code Editor。
+2.  **确认参数**：
+    * 左侧面板已默认填入泸定地震时间（2022年8月 vs 9月）。
+    * 如需分析其他地震，请手动修改日期和 ROI。
+3.  **运行分析**：点击红色的 **"开始分析 (Analyze)"** 按钮。
+4.  **交互判读**：
+    * 拖动地图中间的分割线。
+    * 寻找**红色斑块**，这些通常是高位崩塌或滑坡源头。
+5.  **下载结果**：点击左侧底部的 "数据导出" 按钮，在 Tasks 面板下载 `.tif` 文件。
+
+以下是下载在QGIS中打开的样子
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/36af4ee62fc74137813267475edb43b2.png)
+所有亮白/发白的地方 = 地震把山震碎了、房子倒了
+所有纯黑小点点 = 地震后突然出现的水（堰塞湖）
+灰色区域 = 平安无事
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/30f1f44fd9c642fca65bdff2e883963f.png
