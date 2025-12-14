@@ -383,4 +383,140 @@ $$MeanLST_{i,k} = \frac{1}{N} \sum_{p \in ROI \cap Mask_k} LST(p)$$
 所有亮白/发白的地方 = 地震把山震碎了、房子倒了
 所有纯黑小点点 = 地震后突然出现的水（堰塞湖）
 灰色区域 = 平安无事
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/30f1f44fd9c642fca65bdff2e883963f.png
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/30f1f44fd9c642fca65bdff2e883963f.png)
+
+
+
+# 6、RSEI 生态环境质量智能评估系统 (GEE App)
+![GEE Badge](https://img.shields.io/badge/Platform-Google%20Earth%20Engine-green)
+![Data Badge](https://img.shields.io/badge/Data-Sentinel--1%20SAR-blue)
+![Status Badge](https://img.shields.io/badge/Event-Luding%206.8M%20Earthquake-red)
+> **平台:** Google Earth Engine (GEE)  
+> **核心算法:** 主成分分析 (PCA) / 遥感生态指数 (RSEI)
+
+## 📖 项目简介
+
+本项目是一个基于 Google Earth Engine 的自动化遥感生态指数 (RSEI) 计算工具。它集成了 **绿度、湿度、热度、干度** 四大生态指标，利用 **主成分分析 (PCA)** 技术自动构建 RSEI 模型。
+
+**相较于传统版本，本代码解决了以下痛点：**
+
+1.  **稳定性修复**: 彻底解决了 GEE 中常见的 `Dimensions mismatch` (矩阵维度不匹配) 错误，采用“客户端权重计算 + 代数加权法”，确保 PCA 永不报错。
+2.  **可视化增强**: 地图支持 5 层叠加显示 (RSEI + 4个分量)，并配备了专属图例。
+3.  **多维图表**: 内置 3 类统计图表（直方图、均值对比图、分布曲线图），一键分析生态短板。
+4.  **智能校正**: 自动检测特征向量方向，确保 RSEI 数值逻辑正确 (数值越高，生态越好)。
+
+-----
+
+## 🛠️ 主要功能
+
+### 1\. 四大生态指标自动计算
+
+脚本自动处理 Landsat 8 影像，计算以下指标：
+
+  * **🟢 绿度 (Greenness):** 使用 **NDVI** (归一化植被指数) 表征植被覆盖。
+  * **💧 湿度 (Wetness):** 使用 **Tasseled Cap Wet** (缨帽变换湿度分量) 表征土壤/植被含水量。
+  * **🔥 热度 (Heat):** 使用 **LST** (地表温度) 表征城市热岛效应。
+  * **🏜️ 干度 (Dryness):** 使用 **NDBSI** (建筑指数 SI + 裸土指数 IBI) 表征地表硬化程度。
+
+### 2\. 交互式分析面板
+
+  * **时间滑块**: 自由选择年份 (2014-2023)，默认筛选夏季 (6-9月) 影像以获得最佳植被表现
+ ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0de634f72330471989dd8e519d00d4ac.png)
+  * **图层管理**: 可在地图上自由切换查看单一分量，通过颜色直观判断区域是“太热”还是“太干”。
+  ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d3de072a0c90483dbdec84958426c490.png)
+
+  * **图表看板**:
+      * **RSEI 分布图**: 了解整体生态得分分布。
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b45da476b4604a20bc45c888005f67b5.png)
+
+      * **分量均值对比**: 快速识别该区域的主要生态制约因素。
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5210af8f6a62492b8f1a8f563023dc6a.png)
+
+      * **数值分布曲线**: 详细查看各指标的数据分布形态。
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/1b343e7c9de2456ca45ea553595ef6e2.png)
+
+### 3\. 结果导出
+
+支持一键将计算好的 RSEI 结果导出为 **GeoTIFF** 格式至 Google Drive，保留地理坐标，方便在 ArcGIS/QGIS 中进一步制图。
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/74e08e6b131b4161b137ac2934393b2e.png)
+
+
+-----
+
+## 🚀 快速开始
+
+### 1\. 设置分析区域 (ROI)
+
+代码默认使用了我的测试 Asset ID，**请务必修改为你自己的区域**，否则可能无法运行或权限报错。
+
+找到代码第 **13** 行：
+
+```javascript
+// ❌ 原始代码 (可能无权限)
+var roi = ee.FeatureCollection("projects/maxhecheng/assets/haidian");
+
+// ✅ 修改方式 1: 使用你上传的 Shapefile (Asset ID)
+var roi = ee.FeatureCollection("users/你的用户名/你的文件名");
+
+// ✅ 修改方式 2: 使用简单的几何点缓冲区 (测试用)
+var roi = ee.Geometry.Point([116.3, 39.95]).buffer(10000); 
+```
+
+### 2\. 运行代码
+
+1.  将完整代码复制到 [GEE Code Editor](https://code.earthengine.google.com/)。
+2.  点击上方的 **Run** 按钮。
+3.  在右侧面板选择年份，点击 **"🚀 开始全指标分析"**。
+
+-----
+
+## 📊 结果解读指南
+
+### 图层颜色说明
+
+| 图层 | 颜色条 | 含义 |
+| :--- | :--- | :--- |
+| **RSEI (生态指数)** | 红 ➝ 绿 | **绿色**越深，生态质量越**好** |
+| **绿度 (NDVI)** | 白 ➝ 绿 | **绿色**越深，植被越茂密 |
+| **湿度 (Wet)** | 灰 ➝ 蓝 | **蓝色**越深，水分越充足 |
+| **热度 (LST)** | 蓝 ➝ 红 | **红色**越深，地表温度越**高** (负面) |
+| **干度 (Dry)** | 绿 ➝ 红 | **红色**越深，建筑/裸土越**多** (负面) |
+
+### 图表分析技巧
+
+  * **柱状图 (均值对比)**:
+      * 如果 **干度 (Dry)** 柱子最高：说明该区域建筑密度大，硬化严重。
+      * 如果 **热度 (Heat)** 柱子最高：说明热岛效应是主要问题。
+      * 如果 **绿度 (Green)** 柱子很低：说明缺绿。
+  * **曲线图**:
+      * 理想的生态城市，绿度和湿度曲线应偏右 (高值)，热度和干度曲线应偏左 (低值)。
+  ### GEE界面总览
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/da3ef434d6ea4cea82406f2d9638b241.png)
+
+-----
+
+## ⚠️ 常见问题 (FAQ)
+
+**Q: 为什么提示 "No images found"?**
+A:可能是该年份在选定区域云量过多 (代码默认过滤 \>30% 云量)。
+
+  * **解决方法**: 尝试更换年份，或在代码中调整 `CLOUD_COVER` 阈值，或放宽日期范围。
+
+**Q: 为什么 RSEI 只有 0 或 1？**
+A: 这种情况通常是极端值归一化导致的。
+
+  * **解决方法**: 代码中已设置 `bestEffort: true` 和较大的 `scale` 来缓解此问题。如果依然出现，说明区域内可能有异常像素（如大面积水体或云）。
+
+**Q: 为什么 PC1 计算不会报错了？**
+A: 传统写法直接在 Server 端进行矩阵相乘，容易因像素对齐问题导致 `Dimensions mismatch`。本版本采用了**混合计算法**：先在 Client 端获取特征向量权重，再用简单的代数加权公式生成 PC1，稳定性提升 100%。
+
+-----
+
+## 📝 引用与致谢
+
+本算法基于 **徐涵秋教授** 提出的 RSEI 模型 (Remote Sensing Ecological Index)。
+
+  * *Reference: Xu, H. (2013). A remote sensing urban ecological index and its application. Acta Ecologica Sinica.*
+
+-----
+
