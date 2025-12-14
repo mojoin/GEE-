@@ -389,8 +389,6 @@ $$MeanLST_{i,k} = \frac{1}{N} \sum_{p \in ROI \cap Mask_k} LST(p)$$
 
 # 6、RSEI 生态环境质量智能评估系统 (GEE App)
 ![GEE Badge](https://img.shields.io/badge/Platform-Google%20Earth%20Engine-green)
-![Data Badge](https://img.shields.io/badge/Data-Sentinel--1%20SAR-blue)
-![Status Badge](https://img.shields.io/badge/Event-Luding%206.8M%20Earthquake-red)
 > **平台:** Google Earth Engine (GEE)  
 > **核心算法:** 主成分分析 (PCA) / 遥感生态指数 (RSEI)
 
