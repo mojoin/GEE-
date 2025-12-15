@@ -519,6 +519,8 @@ A: 传统写法直接在 Server 端进行矩阵相乘，容易因像素对齐问
 
 ![请添加图片描述](https://i-blog.csdnimg.cn/direct/a5b1acd6597b44d08ec9255c4ee59366.gif)
 
+<img width="1912" height="948" alt="image" src="https://github.com/user-attachments/assets/866953db-aac8-49f0-8d65-a70b97d0bd5c" />
+
 
 1.  **自定义时间范围**: 支持用户输入任意年份范围（2014年至今），一键更新面板数据。
 >注意不一定是最新的今天，因为 GEE 数据更新会有一定延迟
