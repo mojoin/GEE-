@@ -511,11 +511,12 @@ A: 传统写法直接在 Server 端进行矩阵相乘，容易因像素对齐问
 -----
 
 
-#  VIIRS 夜间灯光监测工具
+#  7、VIIRS 夜间灯光监测工具
 
 这是一个基于 **Google Earth Engine (GEE)** 的交互式应用程序，用于监测、分析和下载 NOAA VIIRS 月度夜间灯光数据。该工具集成了动态可视化、时序分析、GIF 动图生成以及**批量数据导出到 Google Drive** 的功能。
 
 ## ✨ 主要功能
+
 ![请添加图片描述](https://i-blog.csdnimg.cn/direct/a5b1acd6597b44d08ec9255c4ee59366.gif)
 
 
@@ -523,23 +524,32 @@ A: 传统写法直接在 Server 端进行矩阵相乘，容易因像素对齐问
 >注意不一定是最新的今天，因为 GEE 数据更新会有一定延迟
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/189429fc36364f6da12a4706cf3c56be.png)
+
 2.  **交互式图层浏览**:
       * **年份滑块**: 加载指定年份的所有月度数据。
       * **月份滑块**: 快速切换当前年份下的月份图层，查看细节。
+      
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/e1d7b76419be43e5a7f516b7e0af31e4.png)
+
 注意图层处也可以选择显示某年某月的数据
+
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/2d1e4f7b68cc42d4b7583328587e0986.png)
+
 
 
 3.  **时序趋势分析**: 集成交互式图表，点击图表上的数据点，地图会自动跳转到对应的年份和月份。
 4.  **GIF 动图生成**:
       * 自动生成所选时间段内的灯光变化动图。
       * **直接下载链接**: 提供生成的 `.gif` 文件下载链接，无需通过 Drive 即可保存预览。
+      * 
 ![请添加图片描述](https://i-blog.csdnimg.cn/direct/0daff164ccd24a049d8de2ac261526ac.gif)
+
 5.  **数据批量导出 (增强功能)**:
       * **按月批量导出**: 一键将选中年份的所有月度影像导出到 Google Drive (Tasks)。
       * **均值导出**: 导出整个时间段内的平均灯光强度图。
+      * 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/1711567d7a16457e8db74ed49aafd7b4.png)
+
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/168de7b64b0c4362b39012468aacdd14.png)
 
 ## 🛠️ 数据集信息
@@ -603,14 +613,3 @@ var roi = ee.FeatureCollection("projects/maxhecheng/assets/chengdu");
 1.  **Tasks 面板**: 点击导出按钮后，必须去 GEE 编辑器右侧的 `Tasks` 选项卡点击 `Run` 才能真正开始下载。
 2.  **GIF 生成速度**: 如果研究区域 (ROI) 非常大，生成 GIF 下载链接可能需要几秒钟到几分钟的时间。
 3.  **数据缺失**: 如果某一年份 NOAA 没有数据（或尚未发布），控制台会打印 "⚠️ 无数据" 的提示。
-## 源码分享
-
-
-## 📝 引用与致谢
-
-本算法基于 **徐涵秋教授** 提出的 RSEI 模型 (Remote Sensing Ecological Index)。
-
-  * *Reference: Xu, H. (2013). A remote sensing urban ecological index and its application. Acta Ecologica Sinica.*
-
------
-
