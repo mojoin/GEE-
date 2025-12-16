@@ -1,6 +1,5 @@
 /**
- * @name GEE作物产量预测专业平台 (Pro Version)
- * @description 该脚本构建了一个交互式分析平台，支持多源遥感数据(Sentinel-2/Landsat)、
+ * 该脚本构建了一个交互式分析平台，支持多源遥感数据(Sentinel-2/Landsat)、
  * 多区域选择及自定义时间窗口的作物长势监测与产量估算。
  * * 主要功能：
  * 1. UI交互面板：选择卫星源、区域、时间。
@@ -350,3 +349,4 @@ ui.root.insert(0, mainPanel);
 
 // 初始化运行
 runAnalysis();
+
