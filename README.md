@@ -635,6 +635,7 @@ var roi = ee.FeatureCollection("projects/maxhecheng/assets/chengdu");
       * **实时图表**: 自动生成 NDVI 时序生长曲线、产量分布直方图。
       * **统计指标**: 自动计算并显示区域内的平均产量（吨/公顷）。
       * **动态图例**: 地图左下角根据数据自动渲染图例组件。
+
 ![功能总览](https://i-blog.csdnimg.cn/direct/c246c6f1278049e595d45f3b47cdf58e.png)
 
 ## 🛠️ 算法与数据处理
@@ -684,6 +685,7 @@ var roi = ee.FeatureCollection("projects/maxhecheng/assets/chengdu");
 ### 4.1 如何自定义研究区域 (ROI)
 
 默认代码使用矩形坐标。您可以通过修改 `rois` 对象来添加新区域。
+
 ![默认添加了三处区域，可以根据以下步骤进行修改](https://i-blog.csdnimg.cn/direct/62c5b140455c4122b4821ec31732e29f.png)
 
 **步骤:**
@@ -748,8 +750,11 @@ var roi = ee.FeatureCollection("projects/maxhecheng/assets/chengdu");
       * *例如：如果是单产较高的玉米，可能需要设置为 `{min: 5, max: 15}`。*
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8c4c521fceb84171b1be945db32dd982.png)
+
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/7262362e9bf34e1a8b5b853faeb5e65a.png)
+
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/4298329df5734362b042e92c2f447250.png)
+
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/20d94a306a6e4745b3ddcacbd9a640b8.png)
 
 
