@@ -770,3 +770,91 @@ var roi = ee.FeatureCollection("projects/maxhecheng/assets/chengdu");
 
 -----
 
+# 9、基于 GEE 的区域蒸散发时序分析与动态评估系统
+
+
+基于 Google Earth Engine (GEE) Code Editor 的交互式脚本，用于区域蒸散（ET）监测。支持多种数据集、动态图例、投影修复、时序图表、均值影像显示以及动画 GIF 生成。
+
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/deb44aaaa8d74b7ea5423a0d5c348620.png)
+
+
+## 主要特性
+
+- **支持多种ET数据集**
+  - MOD16A2GF（MODIS 全球 ET/PET）
+  - PML_V2（高精度 ET 及组分：ET_water、Ec、Es、Ei、GPP）
+- **区域加载优化**：从 Assets 加载矢量边界，自动简化几何并修复投影问题，避免常见报错
+- **动态图例**：每次可视化时自动生成并更新图例（包含单位和数值标签）
+- **交互式UI面板**：清晰的分区操作（区域加载 → 时间选择 → 数据/波段选择 → 分析）
+- **核心功能**
+  - 计算并显示指定时段的均值影像
+  - 生成区域内时序变化折线图
+  - 提供均值影像 GeoTIFF 下载链接
+  - 生成并下载动画 GIF（带图例）
+- **稳定性增强**：强制重投影为 EPSG:4326，解决部分数据集投影不一致导致的错误
+
+| 数据源名称 | 数据集 ID                      | 可用波段 (Bands)                                    | 分辨率 | 说明                     |
+| :--------- | :----------------------------- | :-------------------------------------------------- | :----- | :----------------------- |
+| MOD16A2    | MODIS/061/MOD16A2GF            | ET (总蒸散发)<br>PET (潜在蒸散发)                   | 500m   | NASA 经典全球ET产品      |
+| PML_V2     | CAS/IGSNRR/PML/V2_v018         | ET_water (水体蒸发)<br>Ec (植被截留)<br>Es (土壤蒸发)<br>Ei (冠层蒸腾)<br>GPP (初级生产力) | 500m   | 结合彭曼公式的高精度产品 |
+
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0780928443f543a8b4142583da1a08f2.png)
+
+## 使用方法
+
+1. 打开 [Google Earth Engine Code Editor](https://code.earthengine.google.com/)
+2. 新建一个脚本，将下方完整代码复制粘贴进去
+3. 点击 **Run** 运行脚本
+4. 左侧将出现控制面板，按照顺序操作即可：
+
+### 操作步骤
+
+1. **区域选择**
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d49a2e3354b14456b090d1ee15490be2.png)
+
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/333b13929cda4f8ba0d39a7299cb760f.png)
+
+
+   - 在文本框中输入你的 Assets 矢量表 ID（如 `users/yourname/your_region`）
+   - 点击 **“加载并修复区域几何”**
+   - 成功后地图会居中显示红色边界
+
+2. **时间与数据选择**
+   - 使用两个 DateSlider 分别设置起始和结束时间（默认 2022 年上半年）
+   - 选择数据集（默认 MOD16A2）
+   - 选择需要显示的波段（会根据数据集自动更新选项）
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8f2c950477d349348875753e425f3195.png)
+
+
+3. **执行分析**
+   - 点击 **“执行分析”**：
+     - 显示时段均值影像
+     - 自动生成动态图例
+     - 显示区域平均值时序图
+     - 提供 GeoTIFF 下载链接
+
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/38f6c6e765134f568a12ad23a71497c1.png)
+
+   - 点击 **“生成动图”**：
+     - 生成时间序列动画 GIF
+     - 显示缩略图并提供下载链接
+
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/dfb90f7c185c4b428304eeec4ebb1a56.png)
+
+## 注意事项
+
+- 确保你的 Assets 矢量表已共享给 Earth Engine（至少读取权限）
+- 大区域或长时间范围可能导致计算超时，建议先用小区域测试
+- PML_V2 数据集的 GPP 波段单位特殊（gC/m²/8day），脚本已自动处理
+- 动图生成时使用了 EPSG:3857 投影以获得更好的视觉效果
+- 脚本已尽量优化稳定性，如仍出现投影错误，可尝试进一步降低 `simplify(100)` 的容差值
+
+## 代码说明（可选阅读）
+
+- `DATA_CONFIG`：集中管理数据集参数，便于后续扩展
+- `updateLegend()`：动态创建/移除图例，避免图例叠加
+- `processCol()`：统一处理集合，包括强制重投影和单位缩放
+- 所有可视化参数均可根据需要调整（位于 `DATA_CONFIG` 或 `COMMON_PALETTE`）
+
+
+
