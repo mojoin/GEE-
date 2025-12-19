@@ -856,5 +856,117 @@ var roi = ee.FeatureCollection("projects/maxhecheng/assets/chengdu");
 - `processCol()`：统一处理集合，包括强制重投影和单位缩放
 - 所有可视化参数均可根据需要调整（位于 `DATA_CONFIG` 或 `COMMON_PALETTE`）
 
+# Sentinel-2 水体叶绿素 a (Chl-a) 质量浓度反演工具
+
+[![外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传](https://img-home.csdnimg.cn/images/20230724024159.png?origin_url=https%3A%2F%2Fimg.shields.io%2Fbadge%2FGoogle%2520Earth%2520Engine-powered-brightgreen&pos_id=img-8WAWJmE6-1766133089203)](https://earthengine.google.com/)
+[![外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传](https://img-home.csdnimg.cn/images/20230724024159.png?origin_url=https%3A%2F%2Fimg.shields.io%2Fbadge%2FData-Sentinel--2%2520SR-blue&pos_id=img-PEe8iVy4-1766133089204)](https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR_HARMONIZED)
+
+## 项目简介
+
+本工具是一个基于 **Google Earth Engine (GEE)** 平台的交互式遥感监测系统，利用 **Sentinel-2** 多光谱影像，通过 **NDCI (Normalized Difference Chlorophyll Index)** 算法反演水体叶绿素 a (Chl-a) 质量浓度。
+
+主要功能包括：
+
+- 动态时间范围选择
+- 用户自定义感兴趣区域 (ROI) 绘制
+- 自动去云处理与水体掩膜提取
+- 叶绿素 a 浓度空间分布可视化
+- 时间序列趋势图表分析
+- 区域统计信息显示
+- 结果导出至 Google Drive (GeoTIFF 格式)
+
+适用于湖泊、河流、水库等内陆水体的富营养化监测与水质评估。
+
+## 算法原理
+
+### 1. 去云处理
+使用 Sentinel-2 的 QA60 波段去除浓云与卷云影响，同时将反射率乘以 0.0001 进行尺度转换。
+
+### 2. 水体提取
+采用 **MNDWI (Modified Normalized Difference Water Index)**：
+```
+MNDWI = (Green - SWIR1) / (Green + SWIR1)
+```
+水体阈值：MNDWI > 0
+
+### 3. 叶绿素 a 反演
+采用 **NDCI (Normalized Difference Chlorophyll Index)**：
+```
+NDCI = (Red Edge - Red) / (Red Edge + Red)   // 对应 Sentinel-2 的 B5 和 B4
+```
+经验线性模型（针对中国典型内陆水体）：
+```
+Chl-a (mg/m³) = NDCI × 14.5 + 15.0
+```
+
+> 注意：该经验公式基于特定区域实测数据拟合，仅供参考。不同水体类型可能需要重新校准。
+
+## 使用说明
+
+### 第一步：设置时间范围
+在左侧控制面板中修改起始日期和结束日期（格式：`YYYY-MM-DD`）。
+
+默认范围：2023-01-01 至 2023-12-31
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/83cd62414e7a4fd1b5b2be874aee5030.png)
+
+### 第二步：绘制感兴趣区域 (ROI)
+1. 点击地图左侧绘图工具栏（矩形、多边形等）
+2. 在地图上绘制或选择监测区域
+3. 如不绘制，默认使用当前地图视口范围(本次以翻阳湖为例)
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/329a9b1b8e5f4ecebd584e3c2c07e18c.png)
+三图层展示
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a35ed2d3509144e99d345bf5a4c58f80.png)
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/6bac7468d0a44a93895965363cf4f7cc.png)
+
+### 第三步：执行分析
+点击 **🚀 执行分析** 按钮，系统将自动：
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/cefeb4e638ac49d4a04532196b467656.png)
+
+
+- 筛选云量 < 20% 的影像
+- 计算中值合成影像
+- 显示真彩色、水体指数、Chl-a 浓度图层
+- 生成时间序列趋势图
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b1c02594dc3242adb5b35d70ea3aaeae.png)
+
+- 计算区域平均浓度
+- 添加浓度图例
+
+### 第四步：导出结果
+分析完成后会出现 **💾 导出分析结果** 按钮，点击即可将 Chl-a 浓度栅格导出至 Google Drive。
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/12644f98b8264463bac7533f4e847e22.png)
+
+## 可视化参数
+
+### Chl-a 浓度图层配色方案
+
+| 浓度范围 (mg/m³) | 等级   | 颜色      |
+|------------------|--------|-----------|
+| 0 - 10           | 极低   | 深蓝      |
+| 10 - 20          | 低     | 青色      |
+| 20 - 30          | 中     | 绿色      |
+| 30 - 40          | 较高   | 黄色      |
+| 40 - 50          | 高     | 橙色      |
+| 50+              | 极高   | 红色      |
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/dd07c1991c4f4f80b34e85fb24fd2588.png)
+
+## 在Qgis中成像
+
+<img width="3507" height="2480" alt="叶绿素分布" src="https://github.com/user-attachments/assets/99a85b88-8e06-4756-b019-20774b2ee700" />
+
+<img width="1980" height="1400" alt="叶绿素分布" src="https://github.com/user-attachments/assets/3c7ab2ca-0321-4bc4-9a54-54709faaf806" />
+
+
+## 注意事项
+
+- 大区域 + 长时段可能导致计算超时，建议：
+  - 缩小时间范围
+  - 减小 ROI 面积
+- 工具已优化 `scale` 和 `maxPixels`，可处理较大水域
+- 冬季或高纬度地区影像较少，可能无数据返回
+- 结果仅为遥感反演估算值，建议结合实地采样验证
+
+
+
 
 
